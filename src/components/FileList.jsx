@@ -107,7 +107,7 @@ export default function FileList() {
   };
 
   return (
-    <div className="p-6 max-w-200xl mx-auto mt-5">
+    <div className="p-6 max-w-6xl mx-auto mt-5"> {/* << Aún hay que revisar esta clase */}
       <Card className="mb-6">
         <CardHeader>
           <CardTitle>Gestión de Archivos</CardTitle>
@@ -217,8 +217,14 @@ export default function FileList() {
                 <SelectItem value="29. Revisión por la dirección y rendición de cuentas">
                   29. Revisión por la dirección y rendición de cuentas
                 </SelectItem>
-                <SelectItem value="30. Informe Anual">
-                  30. Informe Anual
+                <SelectItem value="30. Acciones preventivas y/o correctivas y de mejora">
+                  30. Acciones preventivas y/o correctivas y de mejora
+                </SelectItem>
+                <SelectItem value="31. Programas de vigilancia epidemiológica">
+                  31. Programas de vigilancia epidemiológica
+                </SelectItem>
+                <SelectItem value="32. Plan de emergencias">
+                  32. Plan de emergencias
                 </SelectItem>
               </SelectContent>
             </Select>
@@ -289,7 +295,8 @@ export default function FileList() {
                     key={file.id}
                     className={selectedFiles.has(file.id) ? "bg-blue-50" : ""}
                   >
-                    <TableCell>
+                    {/* Celda de Checkbox: Puedes darle un ancho fijo pequeño */}
+                    <TableCell className="w-[50px] text-center"> {/* Ajustado para centrar y un ancho fijo */}
                       <Checkbox
                         checked={selectedFiles.has(file.id)}
                         onCheckedChange={(checked) =>
@@ -297,17 +304,25 @@ export default function FileList() {
                         }
                       />
                     </TableCell>
-                    <TableCell>{file.id}</TableCell>
-                    <TableCell>{file.name}</TableCell>
-                    <TableCell>{file.idTypeFile}</TableCell>
-                    <TableCell>{file.description}</TableCell>
-                    <TableCell>
+                    {/* ID: Ancho fijo para IDs si son de longitud constante */}
+                    <TableCell className="w-[80px] truncate">{file.id}</TableCell>
+                    {/* Nombre: truncate y un max-w para nombres de archivo */}
+                    <TableCell className="truncate max-w-[250px]">{file.name}</TableCell>
+                    {/* Tipo (idTypeFile): truncate y max-w para los nombres de carpeta/tipo */}
+                    <TableCell className="truncate max-w-[200px]">{file.idTypeFile}</TableCell>
+                    {/* Descripción: truncate y un max-w más generoso para descripciones */}
+                    <TableCell className="truncate max-w-[300px]">{file.description}</TableCell>
+                    {/* Fecha: Ancho fijo para fechas, ya que son de longitud constante */}
+                    <TableCell className="w-[120px]">
                       {file.creationDate?.toDate().toLocaleDateString()}
                     </TableCell>
-                    <TableCell>
+                    {/* Modificación: Ancho fijo para fechas */}
+                    <TableCell className="w-[120px]">
                       {file.creationDate?.toDate().toLocaleDateString()}
                     </TableCell>
-                    <TableCell>{file.creationEmailUser}</TableCell>
+                    {/* Usuario (email): truncate y max-w para emails largos */}
+                    <TableCell className="truncate max-w-[150px]">{file.creationEmailUser}</TableCell>
+                    {/* URL: truncate y max-w para URLs, ya lo tenías */}
                     <TableCell className="truncate max-w-[180px]">
                       {file.url}
                     </TableCell>
