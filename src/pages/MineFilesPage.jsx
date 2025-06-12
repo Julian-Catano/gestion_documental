@@ -1,12 +1,12 @@
-import ListFiles from "../components/FileList";
+import MineFiles from "../components/MineFiles";
 import SidebarLayout from "../layouts/SidebarLayouts";
 
 export default function PageListFile() {
   return (
     <SidebarLayout>
-      <div className="min-h-screen flex flex-col">
+      <div className="flex flex-col">
         <div className="flex-1">
-          <ListFiles />
+          <MineFiles />
         </div>
       </div>
     </SidebarLayout>

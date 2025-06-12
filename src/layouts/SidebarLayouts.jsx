@@ -27,7 +27,7 @@ export default function Layout({ children }) {
             <a href="/ListFiles" className="block text-white hover:bg-green-600 px-4 py-3 rounded transition-colors">
               Gestión de archivos
             </a>
-            <a href="/ListFiles" className="block text-white hover:bg-green-600 px-4 py-3 rounded transition-colors">
+            <a href="/Profile" className="block text-white hover:bg-green-600 px-4 py-3 rounded transition-colors">
               Perfil
             </a>
             <a href="/" className="block text-white hover:bg-green-600 px-4 py-3 rounded transition-colors">
