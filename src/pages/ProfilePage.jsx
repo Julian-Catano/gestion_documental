@@ -1,10 +1,10 @@
-import ListFiles from "../components/FileList";
+import CardProfile from "../components/CardProfile";
 import SidebarLayout from "../layouts/SidebarLayouts";
 
-export default function PageListFile() {
+export default function ProfilePage() {
   return (
     <SidebarLayout>
-          <ListFiles />
+      <CardProfile />
     </SidebarLayout>
   );
 }
