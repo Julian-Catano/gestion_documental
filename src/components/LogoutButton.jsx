@@ -7,6 +7,7 @@ export default function LogoutButton() {
   const navigate = useNavigate();
 
   const handleLogout = async () => {
+    
     await signOut(auth);
     localStorage.removeItem("token");
     localStorage.removeItem("userEmail");
