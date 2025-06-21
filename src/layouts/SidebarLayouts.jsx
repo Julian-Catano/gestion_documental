@@ -1,50 +1,59 @@
 import { User } from "lucide-react";
-import LogoutButton from "../components/LogoutButton"; // ajusta la ruta según tu estructura
-import AppRoutes from "@/routes/AppRoutes";
+import LogoutButton from "../components/LogoutButton";
+import { useState } from "react";
+import MenuUser from "../components/MenuUser"
 
 
 export default function Layout({ children }) {
+  const [showMenu, setShowMenu] = useState(false);
+  const toggleMenu = () => setShowMenu(!showMenu);
   return (
-    <div className="min-h-screen bg-gray-100 overflow-hidden">
-      <header className="bg-slate-800 text-white px-6 py-3 flex items-center justify-between">
+    <div className="min-h-screen bg-gray-100 p-4">
+      {/* Navbar flotante redondeada */}
+      <div className="bg-white text-white px-6 py-4 rounded-xl shadow-lg flex items-center justify-between mb-4">
         <div className="flex items-center">
-          <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center text-slate-800 font-bold text-sm mr-4">
+          <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center text-emerald-600 font-bold text-sm mr-4">
             ULA
           </div>
         </div>
         <div className="flex items-center gap-4">
-          <span className="text-sm">{localStorage.getItem("userEmail")}</span>
-          <div className="w-8 h-8 bg-gray-600 rounded-full flex items-center justify-center">
-            <User size={16} />
-          </div>
-          <LogoutButton />
-        </div>
-      </header>
+          <span className="text-sm text-gray-500">{localStorage.getItem("userEmail")}</span>
+          <div className="relative inline-block text-left">
+            <div
+              className="w-8 h-8 bg-green-600 rounded-full flex items-center justify-center cursor-pointer"
+              onClick={toggleMenu}
+            >
+              <User size={16} color="white" />
+            </div>
 
-      <div className="flex h-[calc(100vh-60px)]">
-        <aside className="w-48 bg-green-500 relative">
-          <nav className="p-4 space-y-2">
-            <a href="/ListFiles" className="block text-white hover:bg-green-600 px-4 py-3 rounded transition-colors">
+            {showMenu && <MenuUser />}
+          </div>
+        </div>
+      </div>
+
+      {/* Contenedor principal redondeado */}
+      <div className="flex rounded-xl shadow-md overflow-hidden bg-white min-h-[calc(100vh-112px)]">
+        {/* Sidebar redondeada a la izquierda */}
+        <aside className="w-56 bg-green-600 text-white p-4 rounded-l-xl">
+          <nav className="space-y-2">
+            <a href="/ListFiles" className="block hover:bg-green-500 px-4 py-3 rounded">
               Gestión de archivos
             </a>
-            <a href="/Profile" className="block text-white hover:bg-green-600 px-4 py-3 rounded transition-colors">
-              Perfil
+            <a href="/MineFiles" className="block hover:bg-green-500 px-4 py-3 rounded">
+              Historial de Archivos
             </a>
-            <a href="/" className="block text-white hover:bg-green-600 px-4 py-3 rounded transition-colors">
+            <a href="/" className="block hover:bg-green-500 px-4 py-3 rounded">
               Inicio
             </a>
           </nav>
-
-          {/* Si este triángulo es decorativo, ajusta el tamaño o elimínalo */}
-          <div className="absolute top-0 right-0 w-0 h-0 border-l-[20px] border-l-transparent border-t-[100vh] border-t-black transform translate-x-full pointer-events-none"></div>
         </aside>
 
-        <main className="flex-1 bg-gray-200 relative">
-          {/* Triángulo decorativo */}
-          <div className="absolute left-0 top-0 w-0 h-0 border-l-[40px] border-l-green-500 border-b-[100vh] border-b-transparent pointer-events-none"></div>
-
-          <div className="ml-10 flex items-center justify-center h-full">
-            {children}
+        {/* Contenido principal */}
+        <main className="flex-1 relative overflow-auto bg-white">
+          <div className="relative z-10 p-8">
+            <div className="bg-white border shadow-md rounded-lg p-6">
+              {children}
+            </div>
           </div>
         </main>
       </div>

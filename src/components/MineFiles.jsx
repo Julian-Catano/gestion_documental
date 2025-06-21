@@ -126,7 +126,7 @@ const handleDescargar = () => {
       <div className="mt-6 flex justify-between items-center">
         <button
           onClick={handleDescargar}
-          className="bg-emerald-500 hover:bg-emerald-600 text-white py-2 px-6 rounded-md transition-colors"
+          className="bg-green-600 hover:bg-emerald-600 text-white py-2 px-6 rounded-md transition-colors"
         >
           Descargar
         </button>

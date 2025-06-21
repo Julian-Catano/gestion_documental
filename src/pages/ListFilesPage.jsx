@@ -4,11 +4,7 @@ import SidebarLayout from "../layouts/SidebarLayouts";
 export default function PageListFile() {
   return (
     <SidebarLayout>
-      <div className="min-h-screen flex flex-col">
-        <div className="flex-1">
           <ListFiles />
-        </div>
-      </div>
     </SidebarLayout>
   );
 }

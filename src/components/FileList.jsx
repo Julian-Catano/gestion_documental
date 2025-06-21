@@ -35,21 +35,13 @@ export default function FileList() {
   const [selectedFolder, setSelectedFolder] = useState("Todos");
   const [selectedUser, setSelectedUser] = useState("");
   const [selectView, setSelectView] = useState("");
-
-  // Estado para paginación
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
   useEffect(() => {
-    const q = query(
-      collection(db, "tbl_files"),
-      orderBy("creationDate", "desc")
-    );
+    const q = query(collection(db, "tbl_files"), orderBy("creationDate", "desc"));
     const unsubscribe = onSnapshot(q, (snapshot) => {
-      const fileList = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
+      const fileList = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
       setFiles(fileList);
     });
     return () => unsubscribe();
@@ -66,7 +58,6 @@ export default function FileList() {
       const fileId = Array.from(selectedFiles)[0];
       const file = files.find((f) => f.id === fileId);
       setViewingFile(file);
-
       const bucketName = "gestiondocumental-ff0fd.firebasestorage.app";
       const filePath = file.path || "default.docx";
       const encodedPath = encodeURIComponent(filePath);
@@ -75,49 +66,36 @@ export default function FileList() {
     }
   };
 
-  // Filtrado de archivos según criterios
   const filteredFiles = files.filter((file) => {
-    const matchesSearch = file.name
-      ?.toLowerCase()
-      .includes(searchTerm.toLowerCase());
-    const matchesFolder =
-      selectedFolder === "Todos" || file.idTypeFile === selectedFolder;
+    const matchesSearch = file.name?.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesFolder = selectedFolder === "Todos" || file.idTypeFile === selectedFolder;
     const matchesUser = selectedUser ? file.user === selectedUser : true;
     return matchesSearch && matchesFolder && matchesUser;
   });
 
-  // Calcular índices para paginación
   const indexOfLastRow = currentPage * rowsPerPage;
   const indexOfFirstRow = indexOfLastRow - rowsPerPage;
   const currentFiles = filteredFiles.slice(indexOfFirstRow, indexOfLastRow);
-
-  // Número total de páginas
   const totalPages = Math.ceil(filteredFiles.length / rowsPerPage);
 
-  // Funciones para manejar cambio de página
-  const goToNextPage = () => {
-    setCurrentPage((page) => Math.min(page + 1, totalPages));
-  };
-  const goToPrevPage = () => {
-    setCurrentPage((page) => Math.max(page - 1, 1));
-  };
+  const goToNextPage = () => setCurrentPage((page) => Math.min(page + 1, totalPages));
+  const goToPrevPage = () => setCurrentPage((page) => Math.max(page - 1, 1));
   const handleRowsPerPageChange = (value) => {
     setRowsPerPage(Number(value));
     setCurrentPage(1);
   };
 
   return (
-    <div className=" flex justify-center">
-      <div className="p-6 min-w-[300px] max-w-6xl w-full mx-auto mt-5 max-h-[80vh] overflow-y-auto"> {/* << Aún hay que revisar esta clase */}
-        <Card className="mb-6">
-          <CardHeader>
-            <CardTitle>Gestión de Archivos</CardTitle>
-          </CardHeader>
-          <CardContent className="flex flex-wrap gap-4 justify-between items-center">
-            <div className="flex gap-4 flex-wrap">
+    <div className="px-4 py-6 max-w-screen-xl mx-auto">
+      <Card className="mb-4">
+        <CardHeader className="flex flex-col md:flex-block justify-between gap-4">
+          <CardTitle className="text-xl">Gestión de Archivos</CardTitle>
+          <div className="flex flex-wrap gap-2">
+
+            <div className="flex md:flex-row gap-2">
               <Select onValueChange={setSelectedUser}>
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="Filtrar por usuario" />
+                <SelectTrigger className="w-[160px]">
+                  <SelectValue placeholder="Filtrar usuario" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="usuario1">Usuario 1</SelectItem>
@@ -127,7 +105,7 @@ export default function FileList() {
 
               <Select onValueChange={setSelectedFolder} value={selectedFolder}>
                 <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="Filtrar por carpeta" />
+                  <SelectValue placeholder="Filtrar carpeta" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="Todos">Todos</SelectItem>
@@ -231,7 +209,7 @@ export default function FileList() {
               </Select>
 
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground h-4 w-4" />
                 <Input
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
@@ -241,166 +219,135 @@ export default function FileList() {
               </div>
             </div>
 
-            <div className="flex gap-2">
-              <Button
-                onClick={handleViewFile}
-                disabled={selectedFiles.size !== 1}
-                variant="outline"
-              >
+            {/* botones */}
+
+            <div className="flex md:flex-row gap-2">
+              <Button onClick={handleViewFile} disabled={selectedFiles.size !== 1} variant="outline">
                 <Eye className="w-4 h-4 mr-2" /> Ver
               </Button>
-              <Dialog className="max-h-md"open={showUpload} onOpenChange={setShowUpload}>
+
+              <Dialog open={showUpload} onOpenChange={setShowUpload}>
                 <DialogTrigger asChild>
-                  <Button className="bg-green-600 hover:bg-green-700 text-white">
-                    <Plus className="w-6 h-2 mr-2" /> Nuevo +
+                  <Button className="bg-green-600 text-white hover:bg-green-700 text-sm font-medium px-4 py-2 rounded-md shadow">
+                    <Plus className="w-4 h-4 mr-1" />
+                    Nuevo
                   </Button>
                 </DialogTrigger>
-                <DialogContent>
-                  <h2 className="text-lg font-semibold mb-4">Subir archivo</h2>
+
+                <DialogContent
+                  className="max-w-2xl w-full max-h-[90vh] overflow-y-auto bg-white rounded-xl border border-gray-200 shadow-md p-6"
+                >
+                  <h2 className="text-lg font-semibold text-gray-700 mb-4">Subir archivo</h2>
                   <FileUpload />
                 </DialogContent>
               </Dialog>
-            </div>
-          </CardContent>
-        </Card>
 
-        <Card>
-          <CardContent className="p-0 max-w-full overflow-x-auto">
-            <Table className="min-w-[1200px]">
-              <TableHeader>
+            </div>
+
+          </div>
+        </CardHeader>
+      </Card>
+
+      <Card>
+        <CardContent className="p-0 overflow-x-auto">
+          <Table className="w-full">
+            <TableHeader>
+              <TableRow>
+                <TableHead className="w-[40px]">✓</TableHead>
+                <TableHead>ID</TableHead>
+                <TableHead>Nombre</TableHead>
+                <TableHead>Tipo</TableHead>
+                <TableHead>Descripción</TableHead>
+                <TableHead>Fecha</TableHead>
+                <TableHead>Usuario</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {currentFiles.length === 0 ? (
                 <TableRow>
-                  <TableHead>Selecciona</TableHead>
-                  <TableHead>ID</TableHead>
-                  <TableHead>Nombre</TableHead>
-                  <TableHead>Tipo</TableHead>
-                  <TableHead>Descripción</TableHead>
-                  <TableHead>Fecha</TableHead>
-                  <TableHead>Modificación</TableHead>
-                  <TableHead>Usuario</TableHead>
-                  <TableHead>URL</TableHead>
+                  <TableCell colSpan={7} className="text-center py-6 text-muted-foreground">
+                    No hay archivos disponibles.
+                  </TableCell>
                 </TableRow>
-              </TableHeader>
-              <TableBody>
-                {currentFiles.length === 0 ? (
-                  <TableRow>
-                    <TableCell
-                      colSpan={9}
-                      className="text-center py-8 text-gray-500"
-                    >
-                      No hay archivos disponibles.
+              ) : (
+                currentFiles.map((file) => (
+                  <TableRow key={file.id} className={selectedFiles.has(file.id) ? "bg-accent" : ""}>
+                    <TableCell>
+                      <Checkbox
+                        checked={selectedFiles.has(file.id)}
+                        onCheckedChange={(checked) => handleSelectFile(file.id, checked)}
+                      />
                     </TableCell>
+                    <TableCell className="truncate max-w-[120px]">{file.id}</TableCell>
+                    <TableCell className="truncate max-w-[200px]">{file.name}</TableCell>
+                    <TableCell className="truncate max-w-[180px]">{file.idTypeFile}</TableCell>
+                    <TableCell className="truncate max-w-[300px]">{file.description}</TableCell>
+                    <TableCell className="w-[120px]">
+                      {file.creationDate?.toDate().toLocaleDateString()}
+                    </TableCell>
+                    <TableCell className="truncate max-w-[150px]">{file.creationEmailUser}</TableCell>
                   </TableRow>
-                ) : (
-                  currentFiles.map((file) => (
-                    <TableRow
-                      key={file.id}
-                      className={selectedFiles.has(file.id) ? "bg-blue-50" : ""}
-                    >
-                      {/* Celda de Checkbox: Puedes darle un ancho fijo pequeño */}
-                      <TableCell className="w-[50px] text-center"> {/* Ajustado para centrar y un ancho fijo */}
-                        <Checkbox
-                          checked={selectedFiles.has(file.id)}
-                          onCheckedChange={(checked) =>
-                            handleSelectFile(file.id, checked)
-                          }
-                        />
-                      </TableCell>
-                      {/* ID: Ancho fijo para IDs si son de longitud constante */}
-                      <TableCell className="w-[80px] truncate">{file.id}</TableCell>
-                      {/* Nombre: truncate y un max-w para nombres de archivo */}
-                      <TableCell className="truncate max-w-[250px]">{file.name}</TableCell>
-                      {/* Tipo (idTypeFile): truncate y max-w para los nombres de carpeta/tipo */}
-                      <TableCell className="truncate max-w-[200px]">{file.idTypeFile}</TableCell>
-                      {/* Descripción: truncate y un max-w más generoso para descripciones */}
-                      <TableCell className="truncate max-w-[300px]">{file.description}</TableCell>
-                      {/* Fecha: Ancho fijo para fechas, ya que son de longitud constante */}
-                      <TableCell className="w-[120px]">
-                        {file.creationDate?.toDate().toLocaleDateString()}
-                      </TableCell>
-                      {/* Modificación: Ancho fijo para fechas */}
-                      <TableCell className="w-[120px]">
-                        {file.creationDate?.toDate().toLocaleDateString()}
-                      </TableCell>
-                      {/* Usuario (email): truncate y max-w para emails largos */}
-                      <TableCell className="truncate max-w-[150px]">{file.creationEmailUser}</TableCell>
-                      {/* URL: truncate y max-w para URLs, ya lo tenías */}
-                      <TableCell className="truncate max-w-[180px]">
-                        {file.url}
-                      </TableCell>
-                    </TableRow>
-                  ))
-                )}
-              </TableBody>
-            </Table>
-          </CardContent>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </CardContent>
 
-          {/* Controles de paginación */}
-          <div className="flex justify-between items-center p-4">
-            <div className="flex items-center gap-2">
-              <Button
-                onClick={goToPrevPage}
-                disabled={currentPage === 1}
-                variant="outline"
-                size="sm"
-              >
-                <ChevronLeft className="w-4 h-4" />
-              </Button>
-              <span>
-                Página {currentPage} de {totalPages}
-              </span>
-              <Button
-                onClick={goToNextPage}
-                disabled={currentPage === totalPages}
-                variant="outline"
-                size="sm"
-              >
-                <ChevronRight className="w-4 h-4" />
-              </Button>
-            </div>
-
-            <div className="flex items-center gap-2">
-              <span>Filas por página:</span>
-              <Select
-                value={String(rowsPerPage)}
-                onValueChange={handleRowsPerPageChange}
-                className="w-[70px]"
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="5">5</SelectItem>
-                  <SelectItem value="10">10</SelectItem>
-                  <SelectItem value="20">20</SelectItem>
-                  <SelectItem value="50">50</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+        <div className="flex justify-between items-center p-4">
+          <div className="flex items-center gap-2">
+            <Button onClick={goToPrevPage} disabled={currentPage === 1} variant="outline" size="sm">
+              <ChevronLeft className="w-4 h-4" />
+            </Button>
+            <span>
+              Página {currentPage} de {totalPages}
+            </span>
+            <Button
+              onClick={goToNextPage}
+              disabled={currentPage === totalPages}
+              variant="outline"
+              size="sm"
+            >
+              <ChevronRight className="w-4 h-4" />
+            </Button>
           </div>
-        </Card>
 
-        {viewingFile && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-xl shadow-lg w-full max-w-4xl h-[80vh] overflow-auto p-4 relative">
-              <button
-                onClick={() => {
-                  setViewingFile(null);
-                  setSelectView("");
-                }}
-                className="absolute top-4 right-4 text-gray-600 hover:text-gray-900"
-              >
-                <X className="w-6 h-6" />
-              </button>
-              <h3 className="mb-4 font-semibold text-lg">{viewingFile.name}</h3>
-              <iframe
-                src={selectView}
-                title="Vista previa archivo"
-                className="w-full h-full border rounded-md"
-              />
-            </div>
+          <div className="flex items-center gap-2">
+            <span>Filas por página:</span>
+            <Select value={String(rowsPerPage)} onValueChange={handleRowsPerPageChange}>
+              <SelectTrigger className="w-[70px]">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="5">5</SelectItem>
+                <SelectItem value="10">10</SelectItem>
+                <SelectItem value="20">20</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
-        )}
-      </div>
+        </div>
+      </Card>
+
+      {viewingFile && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-lg shadow-xl w-full max-w-4xl h-[80vh] overflow-auto relative">
+            <button
+              onClick={() => {
+                setViewingFile(null);
+                setSelectView("");
+              }}
+              className="absolute top-4 right-4 text-muted-foreground hover:text-foreground"
+            >
+              <X className="w-5 h-5" />
+            </button>
+            <h3 className="mb-2 text-lg font-semibold px-4 pt-4">{viewingFile.name}</h3>
+            <iframe
+              src={selectView}
+              title="Vista previa"
+              className="w-full h-full border-t"
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }
