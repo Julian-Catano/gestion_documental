@@ -1,26 +1,32 @@
-import { useEffect, useState } from "react"
-import { onAuthStateChanged } from "firebase/auth"
-import { auth } from "../../firebase"
-import { Navigate } from "react-router-dom"
+import { useEffect, useState } from "react";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "../../firebase";
+import { Navigate } from "react-router-dom";
 
 export function PrivateRoutes({ children }) {
-  const [user, setUser] = useState(null)
-  const [loading, setLoading] = useState(true)
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     return onAuthStateChanged(auth, async (firebaseUser) => {
       if (firebaseUser) {
-        const token = await firebaseUser.getIdToken()
-        localStorage.setItem("token", token)
-        setUser(firebaseUser)
+        const token = await firebaseUser.getIdToken();
+        localStorage.setItem("token", token);
+        setUser(firebaseUser);
       } else {
-        localStorage.removeItem("token")
-        setUser(null)
+        localStorage.removeItem("token");
+        setUser(null);
       }
-      setLoading(false)
-    })
-  }, [])
+      setLoading(false);
+    });
+  }, []);
 
-  if (loading) return <p>Cargando...</p>
-  return user ? children : <Navigate to="/login" replace />
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-screen bg-white">
+        <div className="w-12 h-12 border-4 border-green-500 border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    );
+  }
+  return user ? children : <Navigate to="/login" replace />;
 }

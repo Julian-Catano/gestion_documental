@@ -6,7 +6,7 @@ export default function HomePage() {
       
           {/* Content area */}
           <div className="ml-10 flex items-center justify-center min-h-[calc(100vh-60px)]">
-            <div className="text-center opacity-20">
+            <div className="text-center opacity-50">
               {/* ULA Logo placeholder - you can replace this with actual logo */}
               <div className="w-64 h-64 mx-auto mb-8 relative">
                 <div className="w-full h-full border-4 border-gray-400 rounded-full flex items-center justify-center">
