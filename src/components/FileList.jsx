@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { db } from "../../firebase";
 import { collection, onSnapshot, query, orderBy } from "firebase/firestore";
+import { getStorage, ref, uploadBytesResumable, getMetadata } from "firebase/storage";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -58,10 +59,10 @@ export default function FileList() {
       const fileId = Array.from(selectedFiles)[0];
       const file = files.find((f) => f.id === fileId);
       setViewingFile(file);
-      const bucketName = "gestiondocumental-ff0fd.firebasestorage.app";
+      const bucketName = "gestiondocumental-ff0fd";
       const filePath = file.path || "default.docx";
       const encodedPath = encodeURIComponent(filePath);
-      const publicUrl = `https://firebasestorage.googleapis.com/v0/b/${bucketName}/o/${encodedPath}?alt=media`;
+      const publicUrl = file.url;
       setSelectView(publicUrl);
     }
   };
@@ -341,7 +342,11 @@ export default function FileList() {
             </button>
             <h3 className="mb-2 text-lg font-semibold px-4 pt-4">{viewingFile.name}</h3>
             <iframe
-              src={selectView}
+              src={
+                viewingFile.name?.match(/\.(docx?|xlsx?|pptx?)$/i)
+                  ? `https://docs.google.com/gview?url=${encodeURIComponent(selectView)}&embedded=true`
+                  : selectView
+              }
               title="Vista previa"
               className="w-full h-full border-t"
             />

@@ -4,11 +4,13 @@ import { useState } from "react";
 import { storage, db } from "../../firebase";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { v4 as uuidv4 } from 'uuid';
 import { getAuth } from "firebase/auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { doc, setDoc } from "firebase/firestore"; // Asegúrate de importar esto también
+import { doc, setDoc } from "firebase/firestore";
+import Swal from 'sweetalert2'
 import {
   Select,
   SelectContent,
@@ -37,57 +39,85 @@ export default function FileUpload() {
     }
   };
 
-  const handleUpload = async () => {
-    if (!selectedFile || !fileType || !fileName) {
-      alert("Por favor completa todos los campos requeridos");
-      return;
-    }
+const handleUpload = async () => {
+  if (!selectedFile || !fileType || !fileName) {
+    Swal.fire({
+      title: '¡Por favor completa todos los campos requeridos!',
+      text: 'Tu acción no se pudo realizar',
+      icon: 'warning',
+      confirmButtonText: 'OK'
+    });
+    return;
+  }
 
-    if (!user) {
-      alert("Debes iniciar sesión para subir archivos");
-      return;
-    }
+  if (!user) {
+    Swal.fire({
+      title: '¡Por favor Inicia sesión!',
+      text: 'Tu acción no se pudo realizar',
+      icon: 'error',
+      confirmButtonText: 'OK'
+    });
+    return;
+  }
 
-    setIsUploading(true);
+  setIsUploading(true);
 
-    try {
-      const storageRef = ref(storage, `${fileType}/${selectedFile.name}`);
+  try {
+    const safeName = selectedFile.name.replaceAll(/[^\w.-]/g, "_");
+    const path = `${fileType}/${safeName}`;
+    const storageRef = ref(storage, path);
 
-      // Extraer tipo MIME
-      const metadata = {
-        contentType: selectedFile.type,
-      };
+    const metadata = {
+      contentType: selectedFile.type,
+    };
 
-      // Subir con metadatos
-      await uploadBytes(storageRef, selectedFile, metadata);
-      const url = await getDownloadURL(storageRef);
-      const fileRef = doc(collection(db, "tbl_files"));
-      const idFile = fileRef.id;
-      await setDoc(fileRef,{
-        idFile: idFile,
-        name: fileName,
-        idTypeFile: fileType,
-        description,
-        creationDate: serverTimestamp(),
-        modificationDate: null,
-        creationIdUser: user.uid,
-        creationEmailUser: user.email,
-        modificationIdUser: null,
-        url,
-      });
+    await uploadBytes(storageRef, selectedFile, metadata);
 
-      setSelectedFile(null);
-      setFileType("");
-      setFileName("");
-      setDescription("");
-      alert("Archivo subido exitosamente!");
-    } catch (error) {
-      console.error("Error al subir archivo:", error);
-      alert("Error al subir el archivo");
-    } finally {
-      setIsUploading(false);
-    }
-  };
+    const publicUrl = await getDownloadURL(storageRef); // ✅ obtener URL segura automáticamente
+
+    const fileRef = doc(collection(db, "tbl_files"));
+    const idFile = fileRef.id;
+
+    await setDoc(fileRef, {
+      idFile,
+      name: fileName,
+      idTypeFile: fileType,
+      description,
+      creationDate: serverTimestamp(),
+      modificationDate: null,
+      creationIdUser: user.uid,
+      creationEmailUser: user.email,
+      modificationIdUser: null,
+      path,
+      url: publicUrl
+    });
+
+    setSelectedFile(null);
+    setFileType("");
+    setFileName("");
+    setDescription("");
+
+    Swal.fire({
+      title: 'Archivo subido exitosamente!',
+      text: 'Tu acción se realizó con éxito',
+      icon: 'success',
+      confirmButtonText: 'OK'
+    });
+
+  } catch (error) {
+    console.error("Error al subir archivo:", error);
+    Swal.fire({
+      title: 'Error al subir el archivo',
+      text: 'Tu acción no se pudo realizar',
+      icon: 'error',
+      confirmButtonText: 'OK'
+    });
+  } finally {
+    setIsUploading(false);
+  }
+};
+
+
 
   return (
     <div className="w-full max-w-2xl mx-auto p-6">

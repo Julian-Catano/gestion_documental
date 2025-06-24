@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { ULALogo } from "@/assets/ula-logo";
 import { auth } from "../../firebase";
 import { setDoc, doc, getDoc } from "firebase/firestore";
+import Cookies from "js-cookie";
 import { getAuth } from "firebase/auth";
 import { db } from "../../firebase"; // ajusta la ruta según tu estructura
 
@@ -28,34 +29,33 @@ export default function LoginForm() {
         const userRef = doc(db, "tbl_users", user.uid);
         const userSnap = await getDoc(userRef);
 
-if (!userSnap.exists()) {
-  const rolSeguro =
-    rol.toLowerCase() === "administrador" ? "usuario" : rol.toLowerCase();
+        if (!userSnap.exists()) {
+          const rolSeguro =
+            rol.toLowerCase() === "administrador" ? "usuario" : rol.toLowerCase();
 
-  await setDoc(userRef, {
-    idUser: user.uid,
-    email: user.email,
-    rol: rolSeguro,
-    status: "activo",
-    password: "",
-    creationDate: new Date(),
-  });
+          await setDoc(userRef, {
+            idUser: user.uid,
+            email: user.email,
+            rol: rolSeguro,
+            status: "activo",
+            password: "",
+            creationDate: new Date(),
+          });
 
-  localStorage.setItem("userRol", rolSeguro);
-} else {
-  const data = userSnap.data();
+          Cookies.set("userRol", rolSeguro);
+        } else {
+          const data = userSnap.data();
 
-  if (data.rol !== rol.toLowerCase()) {
-    setError(`Este correo ya está registrado como "${data.rol}". Has seleccionado "${rol}". Por favor, selecciona el rol correcto.`);
-    return; // Detenemos el proceso
-  }
+          if (data.rol !== rol.toLowerCase()) {
+            setError(`Este correo ya está registrado como "${data.rol}". Has seleccionado "${rol}". Por favor, selecciona el rol correcto.`);
+            return;
+          }
 
-  localStorage.setItem("userRol", data.rol || "usuario");
-}
+          Cookies.set("userRol", data.rol || "usuario");
+        }
 
-
-        localStorage.setItem("userEmail", user.email || "");
-        localStorage.setItem("userId", user.uid);
+        Cookies.set("userEmail", user.email || "");
+        Cookies.set("userId", user.uid);
 
         navigate("/");
       }
@@ -64,7 +64,6 @@ if (!userSnap.exists()) {
       setError("Correo o contraseña incorrectos.");
     }
   };
-
 
 
 

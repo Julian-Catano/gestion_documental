@@ -1,7 +1,8 @@
-import { User } from "lucide-react";
+import { Cookie, User } from "lucide-react";
 import LogoutButton from "../components/LogoutButton";
 import { useState } from "react";
 import MenuUser from "../components/MenuUser"
+import Cookies from "js-cookie";
 
 
 export default function Layout({ children }) {
@@ -17,7 +18,7 @@ export default function Layout({ children }) {
           </div>
         </div>
         <div className="flex items-center gap-4">
-          <span className="text-sm text-gray-500">{localStorage.getItem("userEmail")}</span>
+          <span className="text-sm text-gray-500">{Cookies.get("userEmail")}</span>
           <div className="relative inline-block text-left">
             <div
               className="w-8 h-8 bg-green-600 rounded-full flex items-center justify-center cursor-pointer"
