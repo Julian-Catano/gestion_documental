@@ -5,9 +5,11 @@ import { auth, db } from "../../firebase";
 import { onAuthStateChanged } from "firebase/auth";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
+import ResetPassword from "./ChangePassword";
 
 const MisDatos = () => {
   const [isEditing, setIsEditing] = useState(false);
+  const [showReset, setShowReset] = useState(false);
   const navigate = useNavigate();
   const [userData, setUserData] = useState({
     email: "",
@@ -17,7 +19,7 @@ const MisDatos = () => {
   });
 
   const user = auth.currentUser;
-  const userId = user.uid; // 
+  const userId = user.uid; //
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -28,10 +30,10 @@ const MisDatos = () => {
 
         const creationDate = data.creationDate?.toDate
           ? data.creationDate.toDate().toLocaleDateString("es-CO", {
-            year: "numeric",
-            month: "long",
-            day: "numeric",
-          })
+              year: "numeric",
+              month: "long",
+              day: "numeric",
+            })
           : "";
 
         setUserData({
@@ -39,11 +41,10 @@ const MisDatos = () => {
           creationDate,
         });
       }
-      console.log(docSnap.data())
+      console.log(docSnap.data());
     };
     fetchUserData();
   }, []);
-
 
   const handleChange = (e) => {
     setUserData({ ...userData, [e.target.name]: e.target.value });
@@ -73,7 +74,9 @@ const MisDatos = () => {
             name="email"
             value={userData.email}
             onChange={handleChange}
-            className={`p-3 rounded-md ${isEditing ? "bg-white" : "bg-gray-200"} text-gray-600 text-sm`}
+            className={`p-3 rounded-md ${
+              isEditing ? "bg-white" : "bg-gray-200"
+            } text-gray-600 text-sm`}
             readOnly={!isEditing}
           />
 
@@ -82,7 +85,9 @@ const MisDatos = () => {
             name="creationDate"
             value={userData.creationDate}
             onChange={handleChange}
-            className={`p-3 rounded-md ${isEditing ? "bg-white" : "bg-gray-200"} text-gray-600 text-sm`}
+            className={`p-3 rounded-md ${
+              isEditing ? "bg-white" : "bg-gray-200"
+            } text-gray-600 text-sm`}
             readOnly={!isEditing}
           />
 
@@ -91,7 +96,9 @@ const MisDatos = () => {
             name="role"
             value={userData.rol}
             onChange={handleChange}
-            className={`p-3 rounded-md ${isEditing ? "bg-white" : "bg-gray-200"} text-gray-600 text-sm`}
+            className={`p-3 rounded-md ${
+              isEditing ? "bg-white" : "bg-gray-200"
+            } text-gray-600 text-sm`}
             readOnly={!isEditing}
           />
 
@@ -100,27 +107,28 @@ const MisDatos = () => {
             name="status"
             value={userData.status}
             onChange={handleChange}
-            className={`p-3 rounded-md ${isEditing ? "bg-white" : "bg-gray-200"} text-gray-600 text-sm`}
+            className={`p-3 rounded-md ${
+              isEditing ? "bg-white" : "bg-gray-200"
+            } text-gray-600 text-sm`}
             readOnly={!isEditing}
           />
         </div>
 
         <div className="flex justify-between items-center gap-4">
-          {!isEditing ? (
+          <div className="flex flex-col text-xs space-y-2">
             <button
-              className="border border-gray-500 text-gray-500 px-5 py-2 rounded-md text-sm hover:bg-gray-500 hover:text-white"
-              onClick={handleEdit}
+              onClick={() => setShowReset(true)}
+              className="text-left text-gray-500 hover:text-green-500 transition-colors duration-200"
             >
-              Editar
+              ¿Cambiar contraseña?
             </button>
-          ) : (
-            <button
-              className="border border-blue-500 text-blue-500 px-5 py-2 rounded-md text-sm hover:bg-blue-500 hover:text-white"
-              onClick={handleSave}
-            >
-              Guardar
-            </button>
-          )}
+
+            {showReset && (
+              <div className="mt-2">
+                <ResetPassword />
+              </div>
+            )}
+          </div>
 
           <button
             className="bg-green-600 text-white px-5 py-2.5 rounded-md text-sm hover:bg-green-700 ml-auto"

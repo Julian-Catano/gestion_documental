@@ -7,6 +7,7 @@ import { ULALogo } from "@/assets/ula-logo";
 import { auth } from "../../firebase";
 import { setDoc, doc, getDoc } from "firebase/firestore";
 import Cookies from "js-cookie";
+import ResetPassword from "./ResetPassword";
 import { getAuth } from "firebase/auth";
 import { db } from "../../firebase"; // ajusta la ruta según tu estructura
 
@@ -16,6 +17,7 @@ export default function LoginForm() {
   const [rol, setRol] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
+  const [showReset, setShowReset] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -31,7 +33,9 @@ export default function LoginForm() {
 
         if (!userSnap.exists()) {
           const rolSeguro =
-            rol.toLowerCase() === "administrador" ? "usuario" : rol.toLowerCase();
+            rol.toLowerCase() === "administrador"
+              ? "usuario"
+              : rol.toLowerCase();
 
           await setDoc(userRef, {
             idUser: user.uid,
@@ -47,7 +51,9 @@ export default function LoginForm() {
           const data = userSnap.data();
 
           if (data.rol !== rol.toLowerCase()) {
-            setError(`Este correo ya está registrado como "${data.rol}". Has seleccionado "${rol}". Por favor, selecciona el rol correcto.`);
+            setError(
+              `Este correo ya está registrado como "${data.rol}". Has seleccionado "${rol}". Por favor, selecciona el rol correcto.`
+            );
             return;
           }
 
@@ -65,8 +71,6 @@ export default function LoginForm() {
     }
   };
 
-
-
   return (
     <div className="min-h-screen bg-green-900 flex flex-col items-center justify-start pt-12 px-4 sm:pt-10">
       <div className="w-full max-w-md md:max-w-sm lg:max-w-md mx-auto py-6 space-y-8">
@@ -74,10 +78,32 @@ export default function LoginForm() {
           <ULALogo className="w-12 h-12 sm:w-14 sm:h-14 mb-4" />
         </div>
 
-        <div className="text-center px-2">
+        <div className="text-center flex px-2 flex-col gap-2">
           <p className="text-white text-xs">
             ¡Inicia sesión y empieza a gestionar tus archivos!
           </p>
+          <div className="flex flex-col text-xs space-y-2">
+            <button
+              onClick={() => setShowReset(true)}
+              className="text-center text-gray-500 hover:text-green-500 transition-colors duration-200"
+            >
+              ¿Olvidé mi contraseña?
+            </button>
+          </div>
+
+          {showReset && (
+            <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+              <div className="bg-green-900 rounded-lg shadow-lg p-6 w-full max-w-sm relative">
+                <button
+                  onClick={() => setShowReset(false)}
+                  className="absolute top-2 right-2 text-gray-400 hover:text-gray-600 text-xl"
+                >
+                  ✕
+                </button>
+                <ResetPassword />
+              </div>
+            </div>
+          )}
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6 px-2">
@@ -102,7 +128,6 @@ export default function LoginForm() {
               <option value="visitante">Visitante</option>
             </select>
 
-
             <Input
               type="password"
               placeholder="Contraseña"
@@ -126,7 +151,6 @@ export default function LoginForm() {
           </div>
         </form>
       </div>
-
 
       <div className="absolute bottom-0 left-0 w-full pointer-events-none">
         <svg
