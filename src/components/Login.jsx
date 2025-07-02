@@ -29,6 +29,8 @@ export default function LoginForm() {
 
       if (user) {
         const userRef = doc(db, "tbl_users", user.uid);
+        console.log("Usuario autenticado:", auth.currentUser?.uid);
+
         const userSnap = await getDoc(userRef);
 
         if (!userSnap.exists()) {
