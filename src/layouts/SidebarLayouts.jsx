@@ -13,7 +13,7 @@ export default function Layout({ children }) {
       {/* Navbar flotante redondeada */}
       <div className="bg-white text-white px-6 py-4 rounded-xl shadow-lg flex items-center justify-between mb-4">
         <div className="flex items-center">
-          <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center text-emerald-600 font-bold text-sm mr-4">
+          <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center text-emerald-600 font-bold text-lg mr-4">
             ULA
           </div>
         </div>

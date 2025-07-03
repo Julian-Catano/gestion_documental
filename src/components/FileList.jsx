@@ -38,13 +38,23 @@ export default function FileList() {
   const [selectView, setSelectView] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [users, setUsers] = useState([]);
+
 
   useEffect(() => {
     const q = query(collection(db, "tbl_files"), orderBy("creationDate", "desc"));
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const fileList = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
       setFiles(fileList);
+
+
+      const uniqueUsers = Array.from(
+        new Set(fileList.map((file) => file.creationEmailUser || file.user).filter(Boolean))
+      );
+      setUsers(uniqueUsers);
     });
+
+
     return () => unsubscribe();
   }, []);
 
@@ -70,7 +80,10 @@ export default function FileList() {
   const filteredFiles = files.filter((file) => {
     const matchesSearch = file.name?.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesFolder = selectedFolder === "Todos" || file.idTypeFile === selectedFolder;
-    const matchesUser = selectedUser ? file.user === selectedUser : true;
+    const matchesUser =
+      selectedUser === "Todos" || selectedUser === ""
+        ? true
+        : file.creationEmailUser === selectedUser || file.user === selectedUser;
     return matchesSearch && matchesFolder && matchesUser;
   });
 
@@ -99,8 +112,12 @@ export default function FileList() {
                   <SelectValue placeholder="Filtrar usuario" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="usuario1">Usuario 1</SelectItem>
-                  <SelectItem value="usuario2">Usuario 2</SelectItem>
+                  <SelectItem value="Todos">Todos</SelectItem>
+                  {users.map((userEmail) => (
+                    <SelectItem key={userEmail} value={userEmail}>
+                      {userEmail}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
 
@@ -282,7 +299,7 @@ export default function FileList() {
                     <TableCell className="truncate max-w-[120px]">{file.id}</TableCell>
                     <TableCell className="truncate max-w-[200px]">{file.name}</TableCell>
                     <TableCell className="truncate max-w-[180px]">{file.idTypeFile}</TableCell>
-                    <TableCell className="truncate max-w-[300px]">{file.description}</TableCell>
+                    <TableCell className="truncate max-w-[150px]">{file.description}</TableCell>
                     <TableCell className="w-[120px]">
                       {file.creationDate?.toDate().toLocaleDateString()}
                     </TableCell>
