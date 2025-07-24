@@ -3,7 +3,13 @@
 import { useEffect, useState } from "react";
 import { db } from "../../firebase";
 import { collection, onSnapshot, query, orderBy } from "firebase/firestore";
-import { getStorage, ref, uploadBytesResumable, getMetadata } from "firebase/storage";
+import Cookies from "js-cookie";
+import {
+  getStorage,
+  ref,
+  uploadBytesResumable,
+  getMetadata,
+} from "firebase/storage";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -39,21 +45,32 @@ export default function FileList() {
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [users, setUsers] = useState([]);
-
+  const [rol, setRol] = useState("");
 
   useEffect(() => {
-    const q = query(collection(db, "tbl_files"), orderBy("creationDate", "desc"));
+    const q = query(
+      collection(db, "tbl_files"),
+      orderBy("creationDate", "desc")
+    );
     const unsubscribe = onSnapshot(q, (snapshot) => {
-      const fileList = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+      const fileList = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
       setFiles(fileList);
 
-
       const uniqueUsers = Array.from(
-        new Set(fileList.map((file) => file.creationEmailUser || file.user).filter(Boolean))
+        new Set(
+          fileList
+            .map((file) => file.creationEmailUser || file.user)
+            .filter(Boolean)
+        )
       );
       setUsers(uniqueUsers);
     });
 
+    const userRol = Cookies.get("userRol");
+    setRol(userRol || "");
 
     return () => unsubscribe();
   }, []);
@@ -78,8 +95,11 @@ export default function FileList() {
   };
 
   const filteredFiles = files.filter((file) => {
-    const matchesSearch = file.name?.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesFolder = selectedFolder === "Todos" || file.idTypeFile === selectedFolder;
+    const matchesSearch = file.name
+      ?.toLowerCase()
+      .includes(searchTerm.toLowerCase());
+    const matchesFolder =
+      selectedFolder === "Todos" || file.idTypeFile === selectedFolder;
     const matchesUser =
       selectedUser === "Todos" || selectedUser === ""
         ? true
@@ -92,7 +112,8 @@ export default function FileList() {
   const currentFiles = filteredFiles.slice(indexOfFirstRow, indexOfLastRow);
   const totalPages = Math.ceil(filteredFiles.length / rowsPerPage);
 
-  const goToNextPage = () => setCurrentPage((page) => Math.min(page + 1, totalPages));
+  const goToNextPage = () =>
+    setCurrentPage((page) => Math.min(page + 1, totalPages));
   const goToPrevPage = () => setCurrentPage((page) => Math.max(page - 1, 1));
   const handleRowsPerPageChange = (value) => {
     setRowsPerPage(Number(value));
@@ -105,9 +126,8 @@ export default function FileList() {
         <CardHeader className="flex flex-col md:flex-block justify-between gap-4">
           <CardTitle className="text-xl">Gestión de Archivos</CardTitle>
           <div className="flex flex-wrap gap-2">
-
             <div className="flex md:flex-row gap-2">
-              <Select onValueChange={setSelectedUser}>
+              <Select onValueChange={setSelectedUser} disabled = {rol !== "administrador"}>
                 <SelectTrigger className="w-[160px]">
                   <SelectValue placeholder="Filtrar usuario" />
                 </SelectTrigger>
@@ -121,7 +141,7 @@ export default function FileList() {
                 </SelectContent>
               </Select>
 
-              <Select onValueChange={setSelectedFolder} value={selectedFolder}>
+              <Select onValueChange={setSelectedFolder} disabled = {rol !== "administrador"} value={selectedFolder}>
                 <SelectTrigger className="w-[180px]">
                   <SelectValue placeholder="Filtrar carpeta" />
                 </SelectTrigger>
@@ -169,8 +189,8 @@ export default function FileList() {
                     14. Mecanismos de comunicación
                   </SelectItem>
                   <SelectItem value="15. Identificación y evaluación para la adquisición de bienes y servicios">
-                    15. Identificación y evaluación para la adquisición de bienes
-                    y servicios
+                    15. Identificación y evaluación para la adquisición de
+                    bienes y servicios
                   </SelectItem>
                   <SelectItem value="16. Evaluación y selección de proveedores y contratistas">
                     16. Evaluación y selección de proveedores y contratistas
@@ -226,9 +246,10 @@ export default function FileList() {
                 </SelectContent>
               </Select>
 
-              <div className="relative">
+              <div className="relative" >
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground h-4 w-4" />
                 <Input
+                  disabled = {rol !== "administrador"}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   placeholder="Buscar archivo..."
@@ -240,7 +261,11 @@ export default function FileList() {
             {/* botones */}
 
             <div className="flex md:flex-row gap-2">
-              <Button onClick={handleViewFile} disabled={selectedFiles.size !== 1} variant="outline">
+              <Button
+                onClick={handleViewFile}
+                disabled={rol !== "administrador" || selectedFiles.size !== 1 }
+                variant="outline"
+              >
                 <Eye className="w-4 h-4 mr-2" /> Ver
               </Button>
 
@@ -252,16 +277,14 @@ export default function FileList() {
                   </Button>
                 </DialogTrigger>
 
-                <DialogContent
-                  className="max-w-2xl w-full max-h-[90vh] overflow-y-auto bg-white rounded-xl border border-gray-200 shadow-md p-6"
-                >
-                  <h2 className="text-lg font-semibold text-gray-700 mb-4">Subir archivo</h2>
+                <DialogContent className="max-w-2xl w-full max-h-[90vh] overflow-y-auto bg-white rounded-xl border border-gray-200 shadow-md p-6">
+                  <h2 className="text-lg font-semibold text-gray-700 mb-4">
+                    Subir archivo
+                  </h2>
                   <FileUpload />
                 </DialogContent>
               </Dialog>
-
             </div>
-
           </div>
         </CardHeader>
       </Card>
@@ -283,27 +306,45 @@ export default function FileList() {
             <TableBody>
               {currentFiles.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={7} className="text-center py-6 text-muted-foreground">
+                  <TableCell
+                    colSpan={7}
+                    className="text-center py-6 text-muted-foreground"
+                  >
                     No hay archivos disponibles.
                   </TableCell>
                 </TableRow>
               ) : (
                 currentFiles.map((file) => (
-                  <TableRow key={file.id} className={selectedFiles.has(file.id) ? "bg-accent" : ""}>
+                  <TableRow
+                    key={file.id}
+                    className={selectedFiles.has(file.id) ? "bg-accent" : ""}
+                  >
                     <TableCell>
                       <Checkbox
                         checked={selectedFiles.has(file.id)}
-                        onCheckedChange={(checked) => handleSelectFile(file.id, checked)}
+                        onCheckedChange={(checked) =>
+                          handleSelectFile(file.id, checked)
+                        }
                       />
                     </TableCell>
-                    <TableCell className="truncate max-w-[120px]">{file.id}</TableCell>
-                    <TableCell className="truncate max-w-[200px]">{file.name}</TableCell>
-                    <TableCell className="truncate max-w-[180px]">{file.idTypeFile}</TableCell>
-                    <TableCell className="truncate max-w-[150px]">{file.description}</TableCell>
+                    <TableCell className="truncate max-w-[120px]">
+                      {file.id}
+                    </TableCell>
+                    <TableCell className="truncate max-w-[200px]">
+                      {file.name}
+                    </TableCell>
+                    <TableCell className="truncate max-w-[180px]">
+                      {file.idTypeFile}
+                    </TableCell>
+                    <TableCell className="truncate max-w-[150px]">
+                      {file.description}
+                    </TableCell>
                     <TableCell className="w-[120px]">
                       {file.creationDate?.toDate().toLocaleDateString()}
                     </TableCell>
-                    <TableCell className="truncate max-w-[150px]">{file.creationEmailUser}</TableCell>
+                    <TableCell className="truncate max-w-[150px]">
+                      {file.creationEmailUser}
+                    </TableCell>
                   </TableRow>
                 ))
               )}
@@ -313,7 +354,12 @@ export default function FileList() {
 
         <div className="flex justify-between items-center p-4">
           <div className="flex items-center gap-2">
-            <Button onClick={goToPrevPage} disabled={currentPage === 1} variant="outline" size="sm">
+            <Button
+              onClick={goToPrevPage}
+              disabled={currentPage === 1}
+              variant="outline"
+              size="sm"
+            >
               <ChevronLeft className="w-4 h-4" />
             </Button>
             <span>
@@ -331,7 +377,10 @@ export default function FileList() {
 
           <div className="flex items-center gap-2">
             <span>Filas por página:</span>
-            <Select value={String(rowsPerPage)} onValueChange={handleRowsPerPageChange}>
+            <Select
+              value={String(rowsPerPage)}
+              onValueChange={handleRowsPerPageChange}
+            >
               <SelectTrigger className="w-[70px]">
                 <SelectValue />
               </SelectTrigger>
@@ -357,11 +406,15 @@ export default function FileList() {
             >
               <X className="w-5 h-5" />
             </button>
-            <h3 className="mb-2 text-lg font-semibold px-4 pt-4">{viewingFile.name}</h3>
+            <h3 className="mb-2 text-lg font-semibold px-4 pt-4">
+              {viewingFile.name}
+            </h3>
             <iframe
               src={
                 viewingFile.name?.match(/\.(docx?|xlsx?|pptx?)$/i)
-                  ? `https://docs.google.com/gview?url=${encodeURIComponent(selectView)}&embedded=true`
+                  ? `https://docs.google.com/gview?url=${encodeURIComponent(
+                      selectView
+                    )}&embedded=true`
                   : selectView
               }
               title="Vista previa"
