@@ -14,13 +14,13 @@ export default function UserDropdown() {
       </button>
 
       {/* Opción Configuración */}
-      <button
+      {/* <button
         onClick={() => (window.location.href = "/Settings")}
         className="w-full flex items-center gap-2 px-4 py-3 hover:bg-emerald-100 transition-colors"
       >
         <Settings className="w-5 h-5 text-gray-700" />
         <span className="text-sm font-medium text-gray-700">Configuración</span>
-      </button>
+      </button> */}
 
       {/* Botón Cerrar sesión */}
       <div className="px-4 py-3">

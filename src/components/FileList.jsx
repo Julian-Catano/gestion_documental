@@ -126,7 +126,7 @@ export default function FileList() {
         <CardHeader className="flex flex-col md:flex-block justify-between gap-4">
           <CardTitle className="text-xl">Gestión de Archivos</CardTitle>
           <div className="flex flex-wrap gap-2">
-            <div className="flex md:flex-row gap-2">
+            <div className="flex flex-col md:flex-row gap-2">
               <Select onValueChange={setSelectedUser} disabled = {rol !== "administrador"}>
                 <SelectTrigger className="w-[160px]">
                   <SelectValue placeholder="Filtrar usuario" />
@@ -253,7 +253,7 @@ export default function FileList() {
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   placeholder="Buscar archivo..."
-                  className="pl-10 w-64"
+                  className="pl-10 w-full sm:w-48 md:w-64"
                 />
               </div>
             </div>

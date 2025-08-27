@@ -96,53 +96,53 @@ const handleDescargar = () => {
 
 
 
-  return (
-    <div className="bg-white rounded-lg shadow-sm p-6 max-w-3xl mx-auto">
-      <div className="overflow-x-auto">
-        <table className="w-full">
-          <thead className="bg-gray-50 text-left">
-            <tr>
-              <th className="px-4 py-3 text-sm font-medium text-gray-600">ID</th>
-              <th className="px-4 py-3 text-sm font-medium text-gray-600">Nombre</th>
-              <th className="px-4 py-3 text-sm font-medium text-gray-600">Descripción</th>
-              <th className="px-4 py-3 text-sm font-medium text-gray-600">Fecha</th>
+return (
+  <div className="bg-white rounded-lg shadow-sm p-4 sm:p-6 max-w-full sm:max-w-3xl mx-auto">
+    <div className="overflow-x-auto">
+      <table className="w-full min-w-[600px]">
+        <thead className="bg-gray-50 text-left">
+          <tr>
+            <th className="px-3 sm:px-4 py-3 text-xs sm:text-sm font-medium text-gray-600">ID</th>
+            <th className="px-3 sm:px-4 py-3 text-xs sm:text-sm font-medium text-gray-600">Nombre</th>
+            <th className="px-3 sm:px-4 py-3 text-xs sm:text-sm font-medium text-gray-600">Descripción</th>
+            <th className="px-3 sm:px-4 py-3 text-xs sm:text-sm font-medium text-gray-600">Fecha</th>
+          </tr>
+        </thead>
+        <tbody className="divide-y divide-gray-100">
+          {archivos.map((archivo) => (
+            <tr key={archivo.id} className="bg-white">
+              <td className="px-3 sm:px-4 py-3 text-xs sm:text-sm text-gray-500">{archivo.id}</td>
+              <td className="px-3 sm:px-4 py-3 text-xs sm:text-sm text-gray-500">{archivo.name}</td>
+              <td className="px-3 sm:px-4 py-3 text-xs sm:text-sm text-gray-500">{archivo.description}</td>
+              <td className="px-3 sm:px-4 py-3 text-xs sm:text-sm text-gray-500">
+                {archivo.creationDate?.toDate?.().toLocaleDateString() ?? "—"}
+              </td>
             </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-100">
-            {archivos.map((archivo) => (
-              <tr key={archivo.id} className="bg-white">
-                <td className="px-4 py-3 text-sm text-gray-500">{archivo.id}</td>
-                <td className="px-4 py-3 text-sm text-gray-500">{archivo.name}</td>
-                <td className="px-4 py-3 text-sm text-gray-500">{archivo.description}</td>
-                <td className="px-4 py-3 text-sm text-gray-500">
-                  {archivo.creationDate?.toDate?.().toLocaleDateString() ?? "—"}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-
-      <div className="mt-6 flex justify-between items-center">
-        <button
-          onClick={handleDescargar}
-          className="bg-green-600 hover:bg-emerald-600 text-white py-2 px-6 rounded-md transition-colors"
-        >
-          Descargar
-        </button>
-
-        {lastDoc ? (
-          <button
-            disabled={loading}
-            onClick={() => fetchArchivos()}
-            className="bg-gray-200 hover:bg-gray-300 text-gray-700 py-2 px-6 rounded-md disabled:opacity-50"
-          >
-            {loading ? "Cargando..." : "Siguiente"}
-          </button>
-        ) : (
-          <span className="text-sm text-gray-400">No hay más archivos</span>
-        )}
-      </div>
+          ))}
+        </tbody>
+      </table>
     </div>
-  )
+
+    <div className="mt-6 flex flex-col sm:flex-row gap-3 sm:justify-between sm:items-center">
+      <button
+        onClick={handleDescargar}
+        className="bg-green-600 hover:bg-emerald-600 text-white py-2 px-4 sm:px-6 rounded-md transition-colors w-full sm:w-auto"
+      >
+        Descargar
+      </button>
+
+      {lastDoc ? (
+        <button
+          disabled={loading}
+          onClick={() => fetchArchivos()}
+          className="bg-gray-200 hover:bg-gray-300 text-gray-700 py-2 px-4 sm:px-6 rounded-md disabled:opacity-50 w-full sm:w-auto"
+        >
+          {loading ? "Cargando..." : "Siguiente"}
+        </button>
+      ) : (
+        <span className="text-sm text-gray-400 text-center sm:text-left">No hay más archivos</span>
+      )}
+    </div>
+  </div>
+)
 }

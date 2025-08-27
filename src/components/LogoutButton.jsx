@@ -14,6 +14,8 @@ export default function LogoutButton() {
     Cookies.remove("userRol");
     Cookies.remove("token");
 
+    localStorage.clear();
+
     navigate("/login");
   };
 
