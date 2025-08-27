@@ -121,14 +121,14 @@ export default function FileList() {
   };
 
   return (
-    <div className="px-4 py-6 max-w-screen-xl mx-auto">
+    <div className="px-2 sm:px-4 py-4 max-w-full">
       <Card className="mb-4">
-        <CardHeader className="flex flex-col md:flex-block justify-between gap-4">
-          <CardTitle className="text-xl">Gestión de Archivos</CardTitle>
-          <div className="flex flex-wrap gap-2">
-            <div className="flex flex-col md:flex-row gap-2">
+        <CardHeader className="space-y-4">
+          <CardTitle className="text-lg sm:text-xl">Gestión de Archivos</CardTitle>
+          <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
+            <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
               <Select onValueChange={setSelectedUser} disabled = {rol !== "administrador"}>
-                <SelectTrigger className="w-[160px]">
+                <SelectTrigger className="w-full sm:w-[160px]">
                   <SelectValue placeholder="Filtrar usuario" />
                 </SelectTrigger>
                 <SelectContent>
@@ -142,7 +142,7 @@ export default function FileList() {
               </Select>
 
               <Select onValueChange={setSelectedFolder} disabled = {rol !== "administrador"} value={selectedFolder}>
-                <SelectTrigger className="w-[180px]">
+                <SelectTrigger className="w-full sm:w-[200px]">
                   <SelectValue placeholder="Filtrar carpeta" />
                 </SelectTrigger>
                 <SelectContent>
@@ -246,7 +246,7 @@ export default function FileList() {
                 </SelectContent>
               </Select>
 
-              <div className="relative" >
+              <div className="relative w-full sm:w-64" >
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground h-4 w-4" />
                 <Input
                   disabled = {rol !== "administrador"}
@@ -260,8 +260,9 @@ export default function FileList() {
 
             {/* botones */}
 
-            <div className="flex md:flex-row gap-2">
+            <div className="flex flex-wrap gap-2 w-full sm:w-auto">
               <Button
+                className="w-full sm:w-auto"
                 onClick={handleViewFile}
                 disabled={rol !== "administrador" || selectedFiles.size !== 1 }
                 variant="outline"
@@ -271,7 +272,7 @@ export default function FileList() {
 
               <Dialog open={showUpload} onOpenChange={setShowUpload}>
                 <DialogTrigger asChild>
-                  <Button className="bg-green-600 text-white hover:bg-green-700 text-sm font-medium px-4 py-2 rounded-md shadow">
+                  <Button className="bg-green-600 text-white hover:bg-green-700 text-sm w-full sm:w-auto font-medium px-4 py-2 rounded-md shadow">
                     <Plus className="w-4 h-4 mr-1" />
                     Nuevo
                   </Button>
@@ -291,7 +292,7 @@ export default function FileList() {
 
       <Card>
         <CardContent className="p-0 overflow-x-auto">
-          <Table className="w-full">
+          <Table className="min-w-[700px] w-full">
             <TableHeader>
               <TableRow>
                 <TableHead className="w-[40px]">✓</TableHead>
@@ -352,7 +353,7 @@ export default function FileList() {
           </Table>
         </CardContent>
 
-        <div className="flex justify-between items-center p-4">
+        <div className="flex flex-col gap-3 sm:flex-row sm:justify-between items-center p-4 text-sm">
           <div className="flex items-center gap-2">
             <Button
               onClick={goToPrevPage}
@@ -375,7 +376,7 @@ export default function FileList() {
             </Button>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center justify-center gap-2">
             <span>Filas por página:</span>
             <Select
               value={String(rowsPerPage)}
@@ -409,6 +410,7 @@ export default function FileList() {
             <h3 className="mb-2 text-lg font-semibold px-4 pt-4">
               {viewingFile.name}
             </h3>
+            
             <iframe
               src={
                 viewingFile.name?.match(/\.(docx?|xlsx?|pptx?)$/i)

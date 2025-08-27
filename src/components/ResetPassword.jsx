@@ -19,6 +19,7 @@ export default function ResetPassword() {
         title: "Correo enviado",
         text: "Revisa tu bandeja de entrada o carpeta de spam.",
         icon: "success",
+        timer: 3000,
       });
     } catch (error) {
       console.error("Error:", error.code, error.message);
@@ -26,6 +27,7 @@ export default function ResetPassword() {
         title: "Error",
         text: error.message,
         icon: "error",
+        timer: 3000,
       });
     }
   };

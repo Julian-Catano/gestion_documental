@@ -4,13 +4,13 @@ import { useState } from "react";
 import { storage, db } from "../../firebase";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
-import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuidv4 } from "uuid";
 import { getAuth } from "firebase/auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { doc, setDoc } from "firebase/firestore";
-import Swal from 'sweetalert2'
+import Swal from "sweetalert2";
 import {
   Select,
   SelectContent,
@@ -39,88 +39,89 @@ export default function FileUpload() {
     }
   };
 
-const handleUpload = async () => {
-  if (!selectedFile || !fileType || !fileName) {
-    Swal.fire({
-      title: '¡Por favor completa todos los campos requeridos!',
-      text: 'Tu acción no se pudo realizar',
-      icon: 'warning',
-      confirmButtonText: 'OK'
-    });
-    return;
-  }
+  const handleUpload = async () => {
+    if (!selectedFile || !fileType || !fileName) {
+      Swal.fire({
+        title: "¡Por favor completa todos los campos requeridos!",
+        text: "Tu acción no se pudo realizar",
+        icon: "warning",
+        timer: 2000,
+        confirmButtonText: "OK",
+      });
+      return;
+    }
 
-  if (!user) {
-    Swal.fire({
-      title: '¡Por favor Inicia sesión!',
-      text: 'Tu acción no se pudo realizar',
-      icon: 'error',
-      confirmButtonText: 'OK'
-    });
-    return;
-  }
+    if (!user) {
+      Swal.fire({
+        title: "¡Por favor Inicia sesión!",
+        text: "Tu acción no se pudo realizar",
+        icon: "error",
+        timer: 2000,
+        confirmButtonText: "OK",
+      });
+      return;
+    }
 
-  setIsUploading(true);
+    setIsUploading(true);
 
-  try {
-    const safeName = selectedFile.name.replaceAll(/[^\w.-]/g, "_");
-    const path = `${fileType}/${safeName}`;
-    const storageRef = ref(storage, path);
+    try {
+      const safeName = selectedFile.name.replaceAll(/[^\w.-]/g, "_");
+      const path = `${fileType}/${safeName}`;
+      const storageRef = ref(storage, path);
 
-    const metadata = {
-      contentType: selectedFile.type,
-    };
+      const metadata = {
+        contentType: selectedFile.type,
+      };
 
-    await uploadBytes(storageRef, selectedFile, metadata);
+      await uploadBytes(storageRef, selectedFile, metadata);
 
-    const publicUrl = await getDownloadURL(storageRef); // ✅ obtener URL segura automáticamente
+      const publicUrl = await getDownloadURL(storageRef); // ✅ obtener URL segura automáticamente
 
-    const fileRef = doc(collection(db, "tbl_files"));
-    const idFile = fileRef.id;
+      const fileRef = doc(collection(db, "tbl_files"));
+      const idFile = fileRef.id;
 
-    await setDoc(fileRef, {
-      idFile,
-      name: fileName,
-      idTypeFile: fileType,
-      description,
-      creationDate: serverTimestamp(),
-      modificationDate: null,
-      creationIdUser: user.uid,
-      creationEmailUser: user.email,
-      modificationIdUser: null,
-      path,
-      url: publicUrl
-    });
+      await setDoc(fileRef, {
+        idFile,
+        name: fileName,
+        idTypeFile: fileType,
+        description,
+        creationDate: serverTimestamp(),
+        modificationDate: null,
+        creationIdUser: user.uid,
+        creationEmailUser: user.email,
+        modificationIdUser: null,
+        path,
+        url: publicUrl,
+      });
 
-    setSelectedFile(null);
-    setFileType("");
-    setFileName("");
-    setDescription("");
+      setSelectedFile(null);
+      setFileType("");
+      setFileName("");
+      setDescription("");
 
-    Swal.fire({
-      title: 'Archivo subido exitosamente!',
-      text: 'Tu acción se realizó con éxito',
-      icon: 'success',
-      confirmButtonText: 'OK'
-    });
-
-  } catch (error) {
-    console.error("Error al subir archivo:", error);
-    Swal.fire({
-      title: 'Error al subir el archivo',
-      text: 'Tu acción no se pudo realizar',
-      icon: 'error',
-      confirmButtonText: 'OK'
-    });
-  } finally {
-    setIsUploading(false);
-  }
-};
-
-
+      Swal.fire({
+        title: "Archivo subido exitosamente!",
+        text: "Tu acción se realizó con éxito",
+        icon: "success",
+        timer: 2000,
+        confirmButtonText: "OK",
+      });
+    } catch (error) {
+      console.error("Error al subir archivo:", error);
+      Swal.fire({
+        title: "Error al subir el archivo",
+        text: "Tu acción no se pudo realizar",
+        icon: "error",
+        timer: 2000,
+        confirmButtonText: "OK",
+      });
+    } finally {
+      setIsUploading(false);
+    }
+  };
 
   return (
-    <div className="w-full max-w-2xl mx-auto p-6">
+    <div className="w-full max-w-4xl mx-auto p-4 sm:p-6">
       <Card className="border-l-4 border-l-green-600">
         <CardContent className="p-6 space-y-6">
           <div className="space-y-2">
@@ -129,7 +130,7 @@ const handleUpload = async () => {
               <SelectTrigger id="folder-select">
                 <SelectValue placeholder="Selecciona una carpeta" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="max-h-64 overflow-y-auto">
                 <SelectItem value="1. Asignación de una persona que diseñe e implemente SST">
                   1. Asignación de una persona que diseñe e implemente SST
                 </SelectItem>
@@ -253,9 +254,9 @@ const handleUpload = async () => {
 
           <div className="space-y-2">
             <Label>Archivo</Label>
-            <div className="border-2 border-dashed border-gray-300 rounded-lg p-8">
+            <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 sm:p-8">
               <div className="text-center space-y-4">
-                <div className="mx-auto w-16 h-16 text-gray-400">
+                <div className="mx-auto w-12 h-12 sm:w-16 sm:h-16 text-gray-400">
                   <Upload className="w-full h-full" />
                 </div>
                 <div className="space-y-2">
@@ -276,7 +277,7 @@ const handleUpload = async () => {
                     accept=".pdf,.doc,.docx,.txt,.xls,.xlsx,.pptx,.jpg"
                   />
                   {selectedFile && (
-                    <div className="flex items-center justify-center gap-2 text-sm text-gray-600 mt-2">
+                    <div className="flex flex-col sm:flex-row items-center justify-center gap-2 text-sm text-gray-600 mt-2 break-all">
                       <FileText className="w-4 h-4" />
                       <span>{selectedFile.name}</span>
                     </div>

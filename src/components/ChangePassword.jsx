@@ -17,6 +17,7 @@ export default function ResetPassword() {
               "¡Correo de restablecimiento enviado. Revisa tu bandeja de entrada o spam!",
             text: "Tu acción se realizo con exito",
             icon: "success",
+            timer: 3000,
             confirmButtonText: "OK",
           });
           //   setMessage("Correo de restablecimiento enviado. Revisa tu bandeja de entrada.");
@@ -29,6 +30,7 @@ export default function ResetPassword() {
         title: "No se encontró un correo almacenado.",
         text: "Tu acción no se pudo realizar",
         icon: "error",
+        timer: 3000,
         confirmButtonText: "OK",
       });
     //   setMessage("No se encontró un correo almacenado.");
